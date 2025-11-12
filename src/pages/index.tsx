@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Script from 'next/script';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
@@ -26,33 +27,12 @@ export default function Home() {
         <title>GitHub Unwrapped 2025</title>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
-        <script src="https://cdn.tailwindcss.com?plugins=forms,typography" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            primary: "#14b8a6",
-            "background-light": "#f3f4f6",
-            "background-dark": "#111827",
-          },
-          fontFamily: {
-            display: ["Space Grotesk", "sans-serif"],
-          },
-          borderRadius: {
-            DEFAULT: "0.5rem",
-          },
-        },
-      },
-    };
-  `,
-          }}
-        />
+        {/* Fonts are loaded in _document.tsx to avoid per-page loading warnings */}
+        {/* Load Tailwind CDN and inline config via next/script to avoid synchronous script errors */}
+        <Script id="tailwind-config" strategy="beforeInteractive" dangerouslySetInnerHTML={{
+          __html: `tailwind.config = { darkMode: 'class', theme: { extend: { colors: { primary: '#14b8a6', 'background-light': '#f3f4f6', 'background-dark': '#111827' }, fontFamily: { display: ['Space Grotesk', 'sans-serif'] }, borderRadius: { DEFAULT: '0.5rem' } } } };`
+        }} />
+        <Script src="https://cdn.tailwindcss.com?plugins=forms,typography" strategy="beforeInteractive" />
         <style>{`
     .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24 }
     .text-gradient { background-image: linear-gradient(to right, #14b8a6, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-fill-color: transparent; }
