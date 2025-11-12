@@ -1,163 +1,90 @@
-# GitHub Unwrapped 2025 — Combined Docs
+## GitHub Unwrapped — 2025 activity card generator
 
-This file merges auxiliary documentation into a single README. It was generated automatically.
+Create beautiful, shareable GitHub "year in review" cards for 2025. This is a friendly open-source hobby project — run it locally, pick a theme, and export a high-quality PNG ready for social sharing.
 
----
-
-## UI/UX Improvements
-
-(merged from `UI_IMPROVEMENTS.md`)
-
-# UI/UX Improvements - November 11, 2025
-
-## Issues Fixed
-
-### 1. ✅ Best Day/Time Calculation Accuracy
-
-**Problem**: The best day and best hour were using simple heuristics that didn't reflect actual user patterns.
-
-**Solution**:
-- **Best Day**: Now calculates based on total contributions per day of week, filtering out days with zero contributions
-- **Best Hour**: Improved algorithm that considers:
-  - Weekday vs weekend contribution ratio
-  - Average daily contribution density
-  - Returns more accurate time estimates:
-    - High weekday ratio (>75%) → 2 PM or 11 AM (work hours)
-    - Balanced ratio → 3 PM (afternoon)
-    - High weekend ratio → 10 PM or 4 PM (flexible schedule)
-
-**Files Changed**: `src/lib/github.ts`
+• Lightweight client-side rendering — your data never leaves your browser.
 
 ---
 
-## Token Setup Guide
+## Quick highlights
 
-(merged from `SETUP_TOKEN.md`)
+- Themeable cards (Space, Sunset, Retro, Minimal, High-contrast)
+- Contribution heatmap and activity stats
+- High-fidelity PNG export optimized for Instagram Story (1080×1920)
 
-# 🔑 GitHub Token Setup Guide
+---
 
-## Why You Need This
+## Quick start (2 minutes)
 
-The GitHub Unwrapped app needs a GitHub Personal Access Token to fetch user statistics from GitHub's GraphQL API. **This gives you higher rate limits** (5,000 requests/hour vs 60 for unauthenticated).
-
-## Quick Setup (5 minutes)
-
-### Step 1: Create a GitHub Personal Access Token
-
-1. **Go to GitHub Settings**: https://github.com/settings/tokens/new
-2. **Click**: "Generate new token (classic)"
-3. **Fill in**:
-   - Note: `GitHub Unwrapped 2025`
-   - Expiration: `90 days` (or choose your preference)
-   - **Scopes**: ✅ **LEAVE ALL UNCHECKED** (no scopes needed for public data!)
-4. **Click**: "Generate token" (green button at bottom)
-5. **Copy the token** - it will look like: `ghp_1234567890abcdefghijklmnopqrstuvwxyzAB`
-   - ⚠️ **IMPORTANT**: You can only see this once! Copy it now.
-
-### Step 2: Add Token to Your Project
-
-1. **Open**: `.env.local` file in this directory
-2. **Replace** this line:
-   ```bash
-   GITHUB_APP_TOKEN=
-   ```
-   With your actual token:
-   ```bash
-   GITHUB_APP_TOKEN=ghp_YOUR_ACTUAL_TOKEN_HERE
-   ```
-3. **Save** the file
-
-### Step 3: Restart Dev Server
+1. Clone and install
 
 ```powershell
-# Stop the current server (Ctrl+C)
-# Then restart:
+git clone https://github.com/aftab-s/github-unwrapped-2025.git
+cd github-unwrapped-2025
+npm install
+```
+
+2. (Optional) Add a GitHub token for higher rate limits
+
+Create or edit `.env.local` in the project root and add:
+
+```env
+GITHUB_APP_TOKEN=ghp_YOUR_TOKEN_HERE
+```
+
+No scopes are required for public data. Keep the token private.
+
+3. Run the app
+
+```powershell
 npm run dev
 ```
 
-## Test It
+4. Open in browser
 
-1. **Open**: http://localhost:3000
-2. **Enter** any GitHub username (e.g., "octocat")
-3. **Click** "Generate Card"
-4. ✅ **Success**: Card should generate without errors!
+Visit: http://localhost:3000/u/<github-username>
 
----
-
-## Quickstart (merged)
-
-(merged from `QUICKSTART.md`)
-
-# GitHub Unwrapped 2025 - Quick Start Guide
-
-## 🎯 Goal
-
-Build a production-ready GitHub year-in-review card generator that works out of the box.
-
-## ⚡ Fastest Setup (30 seconds)
-
-1. **Install dependencies**:
-   ```bash
-   cd github-unwrapped-2025
-   npm install
-   ```
-
-2. **Run**:
-   ```bash
-   npm run dev
-   ```
-
-3. **Open**: http://localhost:3000
-
-That's it! 🎉 **No configuration required!**
+Type a GitHub username and the card will generate automatically.
 
 ---
 
-## Project Summary
+## Exporting images
 
-(merged from `PROJECT_SUMMARY.md`)
+- Click the "Download Story PNG" button to export a 1080×1920 PNG optimized for Instagram Story.
+- Filenames include pixel dimensions to make it easy to confirm the output (e.g. `username-github-unwrapped-2025-1080x1920.png`).
 
-# 🎉 GitHub Unwrapped 2025 - Project Complete!
-
-## ✅ What Has Been Built
-
-A production-ready, card-first GitHub year-in-review app that generates beautiful social cards for 2025 activity.
-
-(Full project summary omitted for brevity — original file contains detailed deliverables and checklists.)
+Tips
+- Wait for the page to fully load (avatars & external images) before exporting.
+- If you see an older layout after edits, do a hard refresh: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac).
 
 ---
 
-## Preflight Checklist
+## Troubleshooting
 
-(merged from `PREFLIGHT_CHECKLIST.md`)
-
-# 🚀 Pre-Flight Checklist - GitHub Unwrapped 2025
-
-Use this checklist before running or deploying the application.
-
-(Full checklist omitted for brevity — original file contains detailed setup and QA items.)
+- Blank or cropped images: ensure avatar images loaded and try exporting again.
+- Export dimensions off: confirm the export button selected the Story export size (UI shows size label).
+- Still broken? Open developer tools (F12) and check console for errors.
 
 ---
 
-## OAuth Setup
+## Contributing
 
-(merged from `OAUTH_SETUP.md`)
+This is a hobby project — contributions are welcome and appreciated.
 
-# OAuth Setup (Optional)
+How to contribute
 
-## Current Status: ✅ Not Required
+1. Open an issue describing what you'd like to change or a bug you found.
+2. Create a branch: `git checkout -b fix/your-feature`
+3. Send a PR with a short description and small changes.
 
-The app works perfectly **without** OAuth configuration. The "Sign in with GitHub" button will automatically hide when OAuth is not set up.
-
-(See original `OAUTH_SETUP.md` for full instructions.)
+PR checklist
+- Keep changes small and focused
+- Add or update a short demo/test for visual changes
 
 ---
 
+## License
 
-If you'd like, I can now:
+MIT — see the `LICENSE` file.
 
-- Replace the existing `README.md` with this merged version (overwrite), or
-- Rename this file to `README.md` and remove the other `.md` files, or
-- Keep this as `README_MERGED.md` and wait for your confirmation before deleting the original files.
-
-Which option do you prefer? If you want me to proceed with deletion and overwrite, confirm and I'll continue (I'll also update the repo TODOs).
+---
