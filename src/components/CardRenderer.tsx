@@ -1,5 +1,6 @@
 import React from 'react';
 import type { UserStats, ThemeName } from '@/types';
+import { THEME_COLORS } from '@/types/theme';
 
 interface CardRendererProps {
   stats: UserStats;
@@ -8,76 +9,8 @@ interface CardRendererProps {
 
 export const CardRenderer = React.forwardRef<SVGSVGElement, CardRendererProps>(
   ({ stats, theme }, ref) => {
-    // Theme colors matching the HTML designs
-    const themeColors = {
-      space: {
-        bg: '#111827',
-        cardBg: 'rgba(31, 41, 55, 0.6)',
-        border: '#374151',
-        accent: '#14b8a6',
-        accentSecondary: '#6366f1',
-        avatar: '#60a5fa',
-        statBg: 'rgba(17, 24, 39, 0.5)',
-        statBorder: '#374151',
-        textPrimary: '#ffffff',
-        textSecondary: '#9ca3af',
-        iconColor: '#2dd4bf',
-      },
-      sunset: {
-        bg: '#18181b',
-        cardBg: 'rgba(39, 39, 42, 0.6)',
-        border: '#3f3f46',
-        accent: '#f97316',
-        accentSecondary: '#ec4899',
-        avatar: '#f97316',
-        statBg: 'rgba(24, 24, 27, 0.5)',
-        statBorder: '#3f3f46',
-        textPrimary: '#ffffff',
-        textSecondary: '#a1a1aa',
-        iconColor: '#ec4899',
-      },
-      retro: {
-        bg: '#110e19',
-        cardBg: 'rgba(0, 0, 0, 0.8)',
-        border: 'rgba(236, 72, 153, 0.3)',
-        accent: '#ec4899',
-        accentSecondary: '#06b6d4',
-        avatar: '#ec4899',
-        statBg: 'rgba(80, 7, 36, 0.4)',
-        statBorder: 'rgba(236, 72, 153, 0.4)',
-        textPrimary: '#ffffff',
-        textSecondary: '#f9a8d4',
-        iconColor: '#06b6d4',
-      },
-      minimal: {
-        bg: '#f8fafc',
-        cardBg: 'rgba(255, 255, 255, 1)',
-        border: '#e2e8f0',
-        accent: '#f472b6',
-        accentSecondary: '#a78bfa',
-        avatar: '#f472b6',
-        statBg: 'rgba(241, 245, 249, 0.7)',
-        statBorder: '#e2e8f0',
-        textPrimary: '#1e293b',
-        textSecondary: '#94a3b8',
-        iconColor: '#f472b6',
-      },
-      'high-contrast': {
-        bg: '#0D0208',
-        cardBg: 'rgba(10, 10, 10, 0.8)',
-        border: '#1a1a1a',
-        accent: '#39ff14',
-        accentSecondary: '#33ff99',
-        avatar: '#39ff14',
-        statBg: 'rgba(0, 0, 0, 0.5)',
-        statBorder: '#1a1a1a',
-        textPrimary: '#ffffff',
-        textSecondary: '#9ca3af',
-        iconColor: '#39ff14',
-      },
-    };
-
-    const colors = themeColors[theme];
+    // Use modular theme colors system
+    const colors = THEME_COLORS[theme];
 
     // Calculate stats - now showing 6 stats for all themes
     const statsArray = [
@@ -328,9 +261,9 @@ export const CardRenderer = React.forwardRef<SVGSVGElement, CardRendererProps>(
             })}
           </g>
 
-          {/* Activity Insights (not for minimal theme) */}
-          {theme !== 'minimal' && (
-            <g transform="translate(40, 520)">
+          {/* Activity Insights - Show for all themes if data available */}
+          {stats.bestDayOfWeek && (
+            <g transform={`translate(40, ${theme === 'minimal' ? 520 : 520})`}>
               <rect
                 width="800"
                 height="110"
@@ -354,7 +287,7 @@ export const CardRenderer = React.forwardRef<SVGSVGElement, CardRendererProps>(
                 fontSize="12"
                 fill={colors.textSecondary}
               >
-                {theme === 'retro' ? 'Productive Day' : 'Most Productive Day'}
+                Most Productive Day
               </text>
               <text
                 x="20"
@@ -371,7 +304,7 @@ export const CardRenderer = React.forwardRef<SVGSVGElement, CardRendererProps>(
                 fontSize="12"
                 fill={colors.textSecondary}
               >
-                {theme === 'retro' ? 'Productive Hour' : 'Most Productive Hour'}
+                Most Productive Hour
               </text>
               <text
                 x="420"
@@ -387,7 +320,7 @@ export const CardRenderer = React.forwardRef<SVGSVGElement, CardRendererProps>(
 
           {/* Top Languages - Show top 3 */}
           {stats.topLanguages.length > 0 && (
-            <g transform={`translate(40, ${theme === 'minimal' ? 520 : 650})`}>
+            <g transform="translate(40, 650)">
               <rect
                 width="800"
                 height={175}
@@ -450,7 +383,7 @@ export const CardRenderer = React.forwardRef<SVGSVGElement, CardRendererProps>(
 
           {/* Top Repository */}
           {stats.topRepos.length > 0 && (
-            <g transform={`translate(40, ${theme === 'minimal' ? 715 : 845})`}>
+            <g transform="translate(40, 845)">
               <rect
                 width="800"
                 height="90"

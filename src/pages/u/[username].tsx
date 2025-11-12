@@ -6,6 +6,7 @@ import { ThemeSelector } from '@/components/ThemeSelector';
 import { DownloadButton } from '@/components/DownloadButton';
 import { ShareButton } from '@/components/ShareButton';
 import type { UserStats, ThemeName, StatsAPIResponse } from '@/types';
+import { THEME_COLORS, LAYOUT } from '@/types/theme';
 
 export default function UserPage() {
   const router = useRouter();
@@ -93,81 +94,8 @@ export default function UserPage() {
     window.open(url, '_blank', 'width=550,height=420');
   };
 
-  // Theme colors configuration based on HTML designs
-  const themeColors = {
-    space: {
-      bg: 'linear-gradient(to bottom, #1e1b4b, #312e81)',
-      cardBg: 'rgba(31, 41, 55, 0.6)', // Gray-800/60 with backdrop blur
-      border: '#374151', // Gray-700
-      accent: '#14b8a6', // Teal-500
-      accentSecondary: '#6366f1', // Indigo-500
-      glow: 'rgba(20, 184, 166, 0.2)',
-      avatar: '#60a5fa', // Blue-400
-      statBg: 'rgba(17, 24, 39, 0.5)', // Gray-900/50
-      statBorder: '#374151', // border-dark
-      textPrimary: '#ffffff',
-      textSecondary: '#9ca3af', // Gray-400
-      iconColor: '#2dd4bf', // Teal-400
-    },
-    sunset: {
-      bg: 'linear-gradient(to bottom, #7c2d12, #991b1b)',
-      cardBg: 'rgba(39, 39, 42, 0.6)', // Zinc-800/60 with backdrop blur
-      border: '#3f3f46', // Zinc-700
-      accent: '#f97316', // Orange-500
-      accentSecondary: '#ec4899', // Pink-500
-      glow: 'rgba(249, 115, 22, 0.2)',
-      avatar: '#f97316', // Orange-500
-      statBg: 'rgba(24, 24, 27, 0.5)', // Zinc-900/50
-      statBorder: '#3f3f46', // border-dark
-      textPrimary: '#ffffff',
-      textSecondary: '#a1a1aa', // Zinc-400
-      iconColor: '#ec4899', // Pink-500
-    },
-    retro: {
-      bg: 'linear-gradient(to bottom, #110e19, #1a1625)',
-      cardBg: 'rgba(0, 0, 0, 0.8)', // Black/80 with backdrop blur
-      border: 'rgba(236, 72, 153, 0.3)', // Pink-500/30
-      accent: '#ec4899', // Pink-500
-      accentSecondary: '#06b6d4', // Cyan-500
-      glow: 'rgba(236, 72, 153, 0.3)',
-      avatar: '#ec4899', // Pink-500
-      statBg: 'rgba(80, 7, 36, 0.4)', // Pink-950/40
-      statBorder: 'rgba(236, 72, 153, 0.4)', // Pink-500/40
-      textPrimary: '#ffffff',
-      textSecondary: '#f9a8d4', // Pink-300
-      iconColor: '#06b6d4', // Cyan-500
-    },
-    minimal: {
-      bg: 'linear-gradient(to bottom, #f8fafc, #f1f5f9)',
-      cardBg: 'rgba(255, 255, 255, 1)', // White solid
-      border: '#e2e8f0', // Slate-200
-      accent: '#f472b6', // Pink-400
-      accentSecondary: '#a78bfa', // Violet-400
-      glow: 'rgba(244, 114, 182, 0.2)',
-      avatar: '#f472b6', // Pink-400
-      statBg: 'rgba(241, 245, 249, 0.7)', // Slate-100/70
-      statBorder: '#e2e8f0', // Slate-200
-      textPrimary: '#1e293b', // Slate-800
-      textSecondary: '#94a3b8', // Slate-400
-      iconColor: '#f472b6', // Pink-400
-    },
-    'high-contrast': {
-      bg: '#0D0208', // Near-black background
-      cardBg: 'rgba(10, 10, 10, 0.8)', // Card-dark/80
-      border: '#1a1a1a', // Border-dark
-      accent: '#39ff14', // Electric Green
-      accentSecondary: '#33ff99', // Light electric green
-      glow: 'rgba(57, 255, 20, 0.3)',
-      avatar: '#39ff14', // Electric Green
-      statBg: 'rgba(0, 0, 0, 0.5)', // Black/50
-      statBorder: '#1a1a1a', // Border-dark
-      textPrimary: '#ffffff',
-      textSecondary: '#9ca3af', // Gray-400
-      iconColor: '#39ff14', // Electric Green
-    },
-  };
-
-  const currentTheme = themeColors[theme];
+  // Theme colors configuration - imported from modular system
+  const currentTheme = THEME_COLORS[theme];
 
   if (loading) {
     return (
@@ -468,7 +396,7 @@ export default function UserPage() {
                 <div className={`flex flex-col sm:flex-row items-center gap-4 sm:gap-5 mb-6 sm:mb-8`}>
                   <img 
                     alt={`${stats.login} avatar`}
-                    className={`${theme === 'minimal' ? 'w-16 h-16' : 'w-20 h-20'} rounded-full border-4 shadow-lg`}
+                    className="w-20 h-20 rounded-full border-4 shadow-lg"
                     style={{
                       borderColor: currentTheme.avatar,
                       boxShadow: theme === 'retro' 
@@ -574,7 +502,7 @@ export default function UserPage() {
                       <div className="grid grid-cols-2 gap-3 text-left">
                         <div>
                           <p className="text-xs sm:text-sm" style={{ color: currentTheme.textSecondary }}>
-                            {theme === 'retro' ? 'Productive Day' : 'Most Productive Day'}
+                            Most Productive Day
                           </p>
                           <p className="text-sm sm:text-base font-medium" style={{ color: currentTheme.textPrimary }}>
                             {stats.bestDayOfWeek}
@@ -582,7 +510,7 @@ export default function UserPage() {
                         </div>
                         <div>
                           <p className="text-xs sm:text-sm" style={{ color: currentTheme.textSecondary }}>
-                            {theme === 'retro' ? 'Productive Hour' : 'Most Productive Hour'}
+                            Most Productive Hour
                           </p>
                           <p className="text-sm sm:text-base font-medium" style={{ color: currentTheme.textPrimary }}>
                             {stats.bestHour}:00
@@ -665,7 +593,7 @@ export default function UserPage() {
                       }}
                     >
                       <h3 
-                        className="text-sm sm:text-base font-bold mb-1.5 sm:mb-2 flex items-center gap-2"
+                        className="text-sm sm:text-base font-bold mb-2 sm:mb-3 flex items-center gap-2"
                         style={{ color: currentTheme.textPrimary }}
                       >
                         <span className="material-symbols-outlined !text-lg sm:!text-xl" style={{ color: currentTheme.iconColor }}>
