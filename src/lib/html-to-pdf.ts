@@ -3,7 +3,7 @@ import { toCanvas } from 'html-to-image';
 
 export const CANONICAL_CARD_DIMENSIONS = {
   width: 1080,
-  height: 1350,
+  height: 1920,
 } as const;
 
 export interface ExportDimensions {
@@ -46,6 +46,7 @@ function mountCloneForExport(element: HTMLElement, targetWidth: number): {
   clone.style.minWidth = `${targetWidth}px`;
   clone.style.maxWidth = `${targetWidth}px`;
   clone.style.height = 'auto';
+  clone.style.minHeight = '0';
   clone.style.maxHeight = 'none';
   clone.style.position = 'relative';
   clone.style.left = '0';
@@ -59,6 +60,7 @@ function mountCloneForExport(element: HTMLElement, targetWidth: number): {
   wrapper.style.left = '0';
   wrapper.style.top = '-100000px';
   wrapper.style.width = `${targetWidth}px`;
+  wrapper.style.height = 'auto';
   wrapper.style.zIndex = '-1';
   wrapper.appendChild(clone);
   document.body.appendChild(wrapper);
@@ -78,11 +80,60 @@ async function renderElementToCanvas(
   // Allow the browser to recalculate layout with the enforced width
   await new Promise((resolve) => requestAnimationFrame(resolve));
 
+  // Measure the visible content by finding the innermost z-10 wrapper
+  // The card structure is: <card p-8> <div z-10> {content} </div> </card>
+  let naturalHeight = clone.scrollHeight;
+  
+  // Try to find the z-10 wrapper which contains the actual content
+  const contentWrapper = clone.querySelector('div[class*="z-10"]') as HTMLElement | null;
+  
+  if (contentWrapper) {
+    // Get the padding of the card
+    const cardStyle = window.getComputedStyle(clone);
+    const paddingTop = parseFloat(cardStyle.paddingTop) || 0;
+    const paddingBottom = parseFloat(cardStyle.paddingBottom) || 0;
+    
+    // Measure the content wrapper's actual height
+    const contentHeight = contentWrapper.scrollHeight;
+    
+    // Calculate total: top padding + content + minimal bottom spacing (4px)
+    naturalHeight = paddingTop + contentHeight + 4;
+    
+    console.log('[Export Debug] Content-based measurement:', {
+      cardPaddingTop: paddingTop,
+      cardPaddingBottom: paddingBottom,
+      contentWrapperHeight: contentHeight,
+      calculatedHeight: naturalHeight,
+      originalScrollHeight: clone.scrollHeight,
+      savedPixels: clone.scrollHeight - naturalHeight
+    });
+  } else {
+    // Fallback: just remove bottom padding from scrollHeight
+    const cardStyle = window.getComputedStyle(clone);
+    const paddingBottom = parseFloat(cardStyle.paddingBottom) || 0;
+    naturalHeight = clone.scrollHeight - paddingBottom + 4;
+    
+    console.log('[Export Debug] Fallback padding removal:', {
+      paddingBottom: paddingBottom,
+      calculatedHeight: naturalHeight,
+      savedPixels: paddingBottom - 4
+    });
+  }
+
+  clone.style.height = `${naturalHeight}px`;
+  clone.style.minHeight = `${naturalHeight}px`;
+  clone.style.maxHeight = `${naturalHeight}px`;
+
   const canvas = await toCanvas(clone, {
     cacheBust: true,
     pixelRatio: EXPORT_PIXEL_RATIO,
     backgroundColor: backgroundColor ?? undefined,
     width: captureWidth,
+    height: naturalHeight,
+    style: {
+      width: `${captureWidth}px`,
+      height: `${naturalHeight}px`,
+    },
   });
 
   const logicalWidth = canvas.width / EXPORT_PIXEL_RATIO;
@@ -101,7 +152,7 @@ async function renderElementToCanvas(
  *
  * EDGE CASES:
  * - External avatar images are loaded with CORS enabled; failures fall back to blank avatars.
- * - The card is rendered at the canonical 1080px desktop width to guarantee consistent spacing,
+ * - The card is rendered at the canonical 1080×1920 (9:16) story layout to guarantee consistent spacing,
  *   then letterboxed when a different export aspect ratio is requested.
  * - Transparent background is preserved unless an explicit `backgroundColor` is supplied.
  *
@@ -122,49 +173,15 @@ export async function exportHtmlToPng(
   options: ExportOptions = {}
 ): Promise<void> {
   try {
-    const { canvas, logicalWidth, logicalHeight } = await renderElementToCanvas(
+    // Render at the actual card content height with the specified width
+    const { canvas } = await renderElementToCanvas(
       element,
-      CANONICAL_CARD_DIMENSIONS.width,
+      size.width,
       options.backgroundColor ?? null
     );
 
-    const targetCanvas = document.createElement('canvas');
-    targetCanvas.width = size.width;
-    targetCanvas.height = size.height;
-
-    const ctx = targetCanvas.getContext('2d');
-    if (!ctx) {
-      throw new Error('Could not acquire 2D canvas context for PNG export');
-    }
-
-    const fill = options.backgroundColor ?? null;
-    if (fill !== null) {
-      ctx.fillStyle = fill;
-      ctx.fillRect(0, 0, targetCanvas.width, targetCanvas.height);
-    } else {
-      ctx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
-    }
-
-    const scale = Math.min(targetCanvas.width / logicalWidth, targetCanvas.height / logicalHeight);
-    const renderWidth = logicalWidth * scale;
-    const renderHeight = logicalHeight * scale;
-    const offsetX = (targetCanvas.width - renderWidth) / 2;
-    const offsetY = (targetCanvas.height - renderHeight) / 2;
-
-    ctx.drawImage(
-      canvas,
-      0,
-      0,
-      canvas.width,
-      canvas.height,
-      offsetX,
-      offsetY,
-      renderWidth,
-      renderHeight
-    );
-
     await new Promise<void>((resolve, reject) => {
-      targetCanvas.toBlob((blob) => {
+      canvas.toBlob((blob) => {
         if (!blob) {
           reject(new Error('Could not produce PNG blob from canvas'));
           return;
@@ -173,7 +190,7 @@ export async function exportHtmlToPng(
         const downloadUrl = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = downloadUrl;
-        link.download = `${filename}-${size.width}x${size.height}.png`;
+        link.download = `${filename}-${size.width}x${canvas.height / EXPORT_PIXEL_RATIO}.png`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

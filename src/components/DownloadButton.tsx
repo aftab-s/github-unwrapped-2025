@@ -11,83 +11,22 @@ interface DownloadButtonProps {
 
 export function DownloadButton({ cardRef, username, disabled, theme = 'space', themeColors }: DownloadButtonProps) {
   const [downloading, setDownloading] = useState(false);
-  const [cardSize, setCardSize] = useState<{ width: number; height: number } | null>(null);
 
-  React.useEffect(() => {
-    if (!cardRef?.current) {
-      return;
-    }
-
-    let animationFrame: number | null = null;
-
-    const updateSize = () => {
-      animationFrame = null;
-      const rect = cardRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      const width = Math.round(rect.width);
-      const height = Math.round(rect.height);
-      if (!width || !height) return;
-      setCardSize((prev) => {
-        if (prev && prev.width === width && prev.height === height) {
-          return prev;
-        }
-        return { width, height };
-      });
-    };
-
-    const requestUpdate = () => {
-      if (animationFrame !== null) return;
-      animationFrame = window.requestAnimationFrame(updateSize);
-    };
-
-    updateSize();
-
-    let resizeObserver: ResizeObserver | null = null;
-    if (typeof ResizeObserver !== 'undefined') {
-      resizeObserver = new ResizeObserver(requestUpdate);
-      resizeObserver.observe(cardRef.current);
-    } else {
-      window.addEventListener('resize', requestUpdate);
-    }
-
-    return () => {
-      if (animationFrame !== null) {
-        window.cancelAnimationFrame(animationFrame);
-      }
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      } else {
-        window.removeEventListener('resize', requestUpdate);
-      }
-    };
-  }, [cardRef]);
-
-  const resolvedCardSize = React.useMemo(() => {
-    if (cardSize && cardSize.width > 0 && cardSize.height > 0) {
-      const ratio = cardSize.height / cardSize.width;
-      const width = CANONICAL_CARD_DIMENSIONS.width;
-      const height = Math.round(width * ratio);
-      return { width, height };
-    }
-
-    return {
+  const storyExportSize: ExportDimensions = React.useMemo(
+    () => ({
       width: CANONICAL_CARD_DIMENSIONS.width,
       height: CANONICAL_CARD_DIMENSIONS.height,
-    };
-  }, [cardSize]);
-
-  const desktopExportSize: ExportDimensions = React.useMemo(() => ({
-    width: resolvedCardSize.width,
-    height: resolvedCardSize.height,
-    label: `Desktop (${resolvedCardSize.width} × ${resolvedCardSize.height})`,
-  }), [resolvedCardSize]);
+      label: `Instagram Story (${CANONICAL_CARD_DIMENSIONS.width} × ${CANONICAL_CARD_DIMENSIONS.height})`,
+    }),
+    []
+  );
 
   const handleDownloadPng = async () => {
     if (!cardRef?.current || downloading) return;
 
     setDownloading(true);
     try {
-      await exportHtmlToPng(cardRef.current, desktopExportSize, `${username}-github-unwrapped-2025`, {
+      await exportHtmlToPng(cardRef.current, storyExportSize, `${username}-github-unwrapped-2025`, {
         backgroundColor: theme === 'minimal' ? '#ffffff' : null,
       });
     } catch (error) {
@@ -123,7 +62,7 @@ export function DownloadButton({ cardRef, username, disabled, theme = 'space', t
         ) : (
           <>
             <span className="material-symbols-outlined transition-transform group-hover:rotate-12">download</span>
-            <span>Download PNG</span>
+            <span>Download Story PNG</span>
           </>
         )}
       </button>
@@ -132,7 +71,7 @@ export function DownloadButton({ cardRef, username, disabled, theme = 'space', t
         className="mt-2 text-center text-xs font-medium"
         style={{ color: theme === 'minimal' ? '#475569' : '#e5e7eb' }}
       >
-        {desktopExportSize.label}
+        {storyExportSize.label}
       </p>
     </div>
   );

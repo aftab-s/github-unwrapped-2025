@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import React, { useState, useRef, useEffect } from 'react';
 import { ThemeSelector } from '@/components/ThemeSelector';
 import { DownloadButton } from '@/components/DownloadButton';
+import { ContributionGraph } from '@/components/ContributionGraph';
 import type { UserStats, ThemeName, StatsAPIResponse } from '@/types';
 import { THEME_COLORS, LAYOUT } from '@/types/theme';
 
@@ -622,6 +623,15 @@ export default function UserPage() {
                         </div>
                       </div>
                     </div>
+                  )}
+
+                  {/* Contribution Graph */}
+                  {stats.contributionCalendar && stats.contributionCalendar.length > 0 && (
+                    <ContributionGraph 
+                      data={stats.contributionCalendar}
+                      theme={theme}
+                      themeColors={currentTheme}
+                    />
                   )}
                   </div>
                 </div>
