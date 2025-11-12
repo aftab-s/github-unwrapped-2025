@@ -25,8 +25,8 @@ const themeColors: Record<ThemeName, { bg: string; accent: string }> = {
 
 export function ThemeSelector({ currentTheme, onThemeChange }: ThemeSelectorProps) {
   return (
-    <div className="space-y-4">
-      <h3 className="text-xl font-semibold flex items-center gap-2">
+    <div className="space-y-4 bg-gray-800/30 p-6 rounded-lg border border-gray-700/50">
+      <h3 className="text-xl font-bold flex items-center gap-2 text-white">
         <span>🎨</span>
         <span>Choose Theme</span>
       </h3>
@@ -42,8 +42,8 @@ export function ThemeSelector({ currentTheme, onThemeChange }: ThemeSelectorProp
               className={`
                 relative p-3 rounded-xl border-2 transition-all duration-200 min-h-[70px] flex flex-col items-center justify-center gap-1
                 ${isActive 
-                  ? 'border-white scale-105 shadow-2xl ring-2 ring-white/50' 
-                  : 'border-white/20 hover:border-white/40 opacity-80 hover:opacity-100 hover:scale-102'
+                  ? 'border-primary scale-105 shadow-2xl ring-2 ring-primary/50' 
+                  : 'border-gray-700 hover:border-gray-600 opacity-80 hover:opacity-100 hover:scale-102'
                 }
               `}
               style={{

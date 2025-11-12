@@ -5,9 +5,11 @@ interface DownloadButtonProps {
   svgRef: React.RefObject<SVGSVGElement>;
   username: string;
   disabled?: boolean;
+  theme?: string;
+  themeColors?: any;
 }
 
-export function DownloadButton({ svgRef, username, disabled }: DownloadButtonProps) {
+export function DownloadButton({ svgRef, username, disabled, theme = 'space', themeColors }: DownloadButtonProps) {
   const [downloading, setDownloading] = useState(false);
   const [showSizes, setShowSizes] = useState(false);
 
@@ -32,29 +34,69 @@ export function DownloadButton({ svgRef, username, disabled }: DownloadButtonPro
       <button
         onClick={() => setShowSizes(!showSizes)}
         disabled={disabled || downloading}
-        className="btn w-full"
+        className="group flex w-full items-center justify-center gap-3 rounded-xl px-6 py-4 font-bold text-white shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{
+          backgroundColor: themeColors?.accent || '#06b6d4',
+          boxShadow: `0 10px 15px -3px ${themeColors?.accent || '#06b6d4'}30`,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = themeColors?.accentSecondary || '#0891b2';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = themeColors?.accent || '#06b6d4';
+        }}
       >
         {downloading ? (
-          <span className="flex items-center justify-center">
-            <span className="spinner mr-2" style={{ width: 20, height: 20 }} />
-            Exporting...
-          </span>
+          <>
+            <span className="spinner" style={{ width: 20, height: 20, borderWidth: '2px' }} />
+            <span>Exporting...</span>
+          </>
         ) : (
-          '📥 Download PNG'
+          <>
+            <span className="material-symbols-outlined transition-transform group-hover:rotate-12">download</span>
+            <span>Download PNG</span>
+          </>
         )}
       </button>
 
       {showSizes && !disabled && (
-        <div className="absolute bottom-full mb-2 left-0 right-0 bg-gray-900 rounded-lg shadow-xl p-2 z-10">
-          <div className="text-sm font-semibold mb-2 px-2">Choose Size:</div>
+        <div 
+          className="absolute bottom-full mb-2 left-0 right-0 rounded-lg shadow-xl p-2 z-10 border"
+          style={{
+            backgroundColor: theme === 'minimal' ? '#ffffff' : '#1f2937',
+            borderColor: theme === 'minimal' ? '#e2e8f0' : '#374151',
+          }}
+        >
+          <div 
+            className="text-sm font-semibold mb-2 px-2"
+            style={{
+              color: theme === 'minimal' ? '#1e293b' : '#ffffff',
+            }}
+          >
+            Choose Size:
+          </div>
           {Object.entries(EXPORT_SIZES).map(([key, size]) => (
             <button
               key={key}
               onClick={() => handleDownload(key as keyof typeof EXPORT_SIZES)}
-              className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded transition-colors"
+              className="w-full text-left px-3 py-2 rounded transition-colors"
+              style={{
+                color: theme === 'minimal' ? '#1e293b' : '#ffffff',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = theme === 'minimal' ? '#f1f5f9' : '#374151';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
             >
               <div className="font-medium">{size.name}</div>
-              <div className="text-xs text-gray-400">
+              <div 
+                className="text-xs"
+                style={{
+                  color: theme === 'minimal' ? '#64748b' : '#9ca3af',
+                }}
+              >
                 {size.width} × {size.height} px
               </div>
             </button>

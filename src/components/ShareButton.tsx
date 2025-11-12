@@ -28,20 +28,21 @@ export function ShareButton({ username, theme }: ShareButtonProps) {
 
   return (
     <div className="space-y-3">
-      <button onClick={handleCopy} className="btn w-full">
-        {copied ? '✓ Link Copied!' : '🔗 Copy Share Link'}
+      <button onClick={handleCopy} className="btn w-full flex items-center justify-center gap-2">
+        <span className="material-symbols-outlined">{copied ? 'check' : 'link'}</span>
+        <span>{copied ? 'Link Copied!' : 'Copy Share Link'}</span>
       </button>
 
       <button
         onClick={handleTwitterShare}
-        className="btn w-full"
-        style={{ background: '#1DA1F2' }}
+        className="w-full px-6 py-3 rounded-lg font-bold transition-all duration-200 flex items-center justify-center gap-2 bg-[#1DA1F2] hover:bg-[#1a8cd8] text-white shadow-lg"
       >
-        🐦 Share on Twitter
+        <span className="material-symbols-outlined">share</span>
+        <span>Share on Twitter</span>
       </button>
 
-      <div className="text-sm text-center opacity-75 mt-2">
-        <a href={shareUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
+      <div className="text-sm text-center text-gray-500 mt-2">
+        <a href={shareUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
           {shareUrl.replace('http://localhost:3000', 'githubunwrapped.com')}
         </a>
       </div>
