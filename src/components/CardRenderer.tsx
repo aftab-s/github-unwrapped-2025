@@ -5,15 +5,17 @@ import { THEME_COLORS } from '@/types/theme';
 interface CardRendererProps {
   stats: UserStats;
   theme: ThemeName;
+  extended?: boolean; // show additional stats beyond the base 6
 }
 
 export const CardRenderer = React.forwardRef<SVGSVGElement, CardRendererProps>(
-  ({ stats, theme }, ref) => {
+  ({ stats, theme, extended = false }, ref) => {
     // Use modular theme colors system
     const colors = THEME_COLORS[theme];
 
     // Calculate stats - now showing 6 stats for all themes
-    const statsArray = [
+    interface StatBox { label: string; value: number | string; gradient?: boolean }
+    const baseStats: StatBox[] = [
       { label: 'Contributions', value: stats.totalCommits, gradient: true },
       { label: 'Longest Streak', value: stats.longestStreakDays },
       { label: 'Pull Requests', value: stats.totalPRs },
@@ -21,6 +23,18 @@ export const CardRenderer = React.forwardRef<SVGSVGElement, CardRendererProps>(
       { label: 'Stars Given', value: stats.totalStarsGiven },
       { label: 'Repositories', value: stats.totalRepositories },
     ];
+
+    const extendedStats: StatBox[] = extended
+      ? [
+          { label: 'PR Reviews', value: stats.totalPRReviews },
+          { label: 'Anniversary', value: `${stats.githubAnniversary}y` },
+          ...(stats.yearOverYearGrowth
+            ? [{ label: 'Growth', value: `${stats.yearOverYearGrowth.overallGrowth}%` }]
+            : []),
+        ]
+      : [];
+
+    const statsArray = [...baseStats, ...extendedStats];
 
     return (
       <svg
@@ -212,10 +226,10 @@ export const CardRenderer = React.forwardRef<SVGSVGElement, CardRendererProps>(
             @{stats.login}
           </text>
 
-          {/* Stats Grid - 6 stats in 3x2 grid */}
+          {/* Stats Grid - dynamic columns (3) and rows based on stat count */}
           <g transform="translate(40, 280)">
             {statsArray.map((stat, index) => {
-              const cols = 3; // Always 3 columns for 6 stats
+              const cols = 3;
               const col = index % cols;
               const row = Math.floor(index / cols);
               const boxWidth = 253;
@@ -224,7 +238,6 @@ export const CardRenderer = React.forwardRef<SVGSVGElement, CardRendererProps>(
               const gapY = 16;
               const x = col * (boxWidth + gapX);
               const y = row * (boxHeight + gapY);
-
               return (
                 <g key={index} transform={`translate(${x}, ${y})`}>
                   <rect
@@ -261,9 +274,9 @@ export const CardRenderer = React.forwardRef<SVGSVGElement, CardRendererProps>(
             })}
           </g>
 
-          {/* Activity Insights - Show for all themes if data available */}
+          {/* Activity Insights - position shifts downward if extended stats add extra row */}
           {stats.bestDayOfWeek && (
-            <g transform={`translate(40, ${theme === 'minimal' ? 520 : 520})`}>
+            <g transform={`translate(40, ${extended ? 520 + (Math.ceil(statsArray.length / 3) - 2) * 116 : 520})`}>
               <rect
                 width="800"
                 height="110"
@@ -322,8 +335,11 @@ export const CardRenderer = React.forwardRef<SVGSVGElement, CardRendererProps>(
           {stats.topLanguages.length > 0 && (() => {
             const itemCount = Math.min(stats.topLanguages.length, 5);
             const rectHeight = 80 + itemCount * 35; // dynamic height based on items
+            // Adjust Y if extended stats push content downward
+            const baseY = 650;
+            const extraOffset = extended ? (Math.ceil(statsArray.length / 3) - 2) * 116 : 0;
             return (
-              <g transform="translate(40, 650)">
+              <g transform={`translate(40, ${baseY + extraOffset})`}>
                 <rect
                   width="800"
                   height={rectHeight}
@@ -401,7 +417,7 @@ export const CardRenderer = React.forwardRef<SVGSVGElement, CardRendererProps>(
 
           {/* Top Repository */}
           {stats.topRepos.length > 0 && (
-            <g transform="translate(40, 845)">
+            <g transform={`translate(40, ${845 + (extended ? (Math.ceil(statsArray.length / 3) - 2) * 116 : 0)})`}>
               <rect
                 width="800"
                 height="90"

@@ -83,34 +83,32 @@ export function ContributionGraph({ data, theme = 'space', themeColors }: Contri
   };
 
   // Visual sizing is controlled via CSS variables for export overrides.
-  // Defaults are defined in globals.css (:root). We keep JS widths for layout calc.
-  const cellSize = 10; // used only for width calc (minWidth)
+  // Defaults are defined in globals.css (:root).
   const cellGap = 2;
-  const totalWidth = weeks.length * (cellSize + cellGap);
 
   return (
     <div 
-      className="border rounded-xl p-3 sm:p-4 contrib-graph"
+      className="border rounded-lg p-1.5 contrib-graph"
       style={{
         backgroundColor: themeColors?.statBg || (theme === 'minimal' ? '#ffffff' : 'rgba(31, 41, 55, 0.5)'),
         borderColor: themeColors?.statBorder || (theme === 'minimal' ? '#e2e8f0' : '#374151'),
       }}
     >
-      <div className="flex items-center justify-between mb-2 sm:mb-3">
+      <div className="flex items-center justify-between mb-1">
         <h3 
-          className="text-sm sm:text-base font-bold flex items-center gap-2"
+          className="text-[10px] font-bold flex items-center gap-0.5"
           style={{ color: themeColors?.textPrimary || (theme === 'minimal' ? '#1e293b' : '#ffffff') }}
         >
-          <span className="material-symbols-outlined !text-lg sm:!text-xl" style={{ color: themeColors?.iconColor }}>analytics</span>
-          2025 Contribution Activity
+          <span className="material-symbols-outlined text-xs" style={{ color: themeColors?.iconColor }}>analytics</span>
+          Contribution Graph
         </h3>
-        <div className="hidden sm:flex items-center gap-2 text-xs" style={{ color: themeColors?.textSecondary || '#9ca3af' }}>
+        <div className="flex items-center gap-0.5 text-[8px]" style={{ color: themeColors?.textSecondary || '#9ca3af' }}>
           <span>Less</span>
-          <div className="flex gap-1">
+          <div className="flex gap-0.5">
             {[0, 0.25, 0.5, 0.75, 1].map((intensity, i) => (
               <div
                 key={i}
-                className="w-2.5 h-2.5 rounded-sm"
+                className="w-1 h-1 rounded-sm"
                 style={{ backgroundColor: getColor(intensity * maxContributions) }}
               />
             ))}
@@ -120,13 +118,13 @@ export function ContributionGraph({ data, theme = 'space', themeColors }: Contri
       </div>
       
       <div 
-        className="overflow-x-auto pb-1 scrollbar-hide"
+        className="overflow-x-auto pb-0.5 scrollbar-hide"
         style={{
           scrollbarWidth: 'none', /* Firefox */
           msOverflowStyle: 'none', /* IE and Edge */
         }}
       >
-  <div style={{ minWidth: `calc(${weeks.length} * (var(--cg-cell-w) + ${cellGap}px))` }}>
+        <div style={{ minWidth: 'min-content' }}>
           <div className="flex gap-[2px]">
             {weeks.map((week, weekIndex) => (
               <div key={weekIndex} className="flex flex-col gap-[2px]">
@@ -136,10 +134,10 @@ export function ContributionGraph({ data, theme = 'space', themeColors }: Contri
                   return (
                     <div
                       key={dayIndex}
-                      className="rounded-sm transition-all hover:ring-1 cursor-pointer"
+                      className="rounded-sm transition-all hover:ring-1 cursor-pointer flex-shrink-0"
                       style={{
-                        width: 'var(--cg-cell-w)',
-                        height: 'var(--cg-cell-h)',
+                        width: 'var(--cg-cell-w, 10px)',
+                        height: 'var(--cg-cell-h, 10px)',
                         backgroundColor: day ? getColor(day.count) : 'transparent',
                         boxShadow: day && day.count > 0 && theme === 'retro' ? `0 0 3px ${getColor(day.count)}` : 'none',
                       }}

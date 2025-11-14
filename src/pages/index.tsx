@@ -11,6 +11,10 @@ export default function Home() {
     e.preventDefault();
     const trimmed = username.trim();
     if (!trimmed) return;
+    // Persist last username for preview page consumption
+    try {
+      document.cookie = `lastUsername=${encodeURIComponent(trimmed)}; path=/; max-age=${60 * 60 * 24 * 30}`;
+    } catch {}
     router.push(`/u/${encodeURIComponent(trimmed)}`);
   };
 
@@ -74,6 +78,18 @@ export default function Home() {
                 Generate
               </button>
             </form>
+
+            {username.trim() && (
+              <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                <a
+                  href={`/preview/desktop?username=${encodeURIComponent(username.trim())}`}
+                  className="inline-flex items-center gap-1 underline decoration-dotted underline-offset-4 hover:text-gray-300 transition-colors"
+                >
+                  <span className="material-symbols-outlined !text-sm">grid_view</span>
+                  Preview All Themes (Desktop)
+                </a>
+              </div>
+            )}
 
             <div className="mt-8 space-y-3 text-sm text-gray-500 dark:text-gray-400">
               <p className="flex items-center justify-center gap-2">
